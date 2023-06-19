@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../resources/css/style.css">
+    <script src="../../src/js/script.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+    <header>
+        <a href="../../src/html/index.html" class="logo"><img src="../../resources/Images/HomePage/logo-removebg-preview.png" alt=""> </a>
+        <nav>
+            <!-- NAV BAR-->
+            <ul>
+                <li><a href="../../src/html/index.html" class="active">Accueil</a></li>
+                <li><a href="../../src/html/biblio.html">Bibliothèque</a></li>
+                <li><a href="../../src/html/playlist.html">Playlist</a></li> 
+                <li><a href="../../src/html/lecteur.html">Lecteur musique</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!--COMPONENT BIBLIOTHEQUE-->
+    <div id="container-tab">
+
+        <!--BARRE DE NAV LATERALE-->
+        <div id="side-navbar">
+            <!--IDENTIFIANT-->
+            <div id="identifiant">
+                <img src="../../resources/Images/Library/pp-writer.jpg" alt="Photo de l'utilisateur/utilisatrice" id="pp-user">
+                <h1>Nom Prénom</h1>
+            </div>
+            <!--CATEGORIES-->
+            <div id="categories">
+                <h2>Mes titres</h2>
+                <h2>Mes albums</h2>
+                <h2>Mes favoris</h2>
+                <h2>Mes playlists</h2>
+                <h2>Le top 20 de l'ETML</h2>
+                <h2>Mes paramètres</h2>
+            </div><!--FIN CATEGORIES-->
+        </div><!--FIN BARRE DE NAV LATERALE-->
+
+        <!--COMPONENT TABLE -->
+        <div id="main-content">
+
+            <!--BARRE DE RECHERCHE-->
+            <div id="search-bar">
+                <input type="text" id="search-input" placeholder="Rechercher...">
+            </div><!--FIN BARRE DE RECHERCHE-->
+
+            <!--BARRE DESCRIPTION TITRE ARTISTE DUREE--> <!--INCLURE DANS TAB??-->
+            <div id="upload-file">
+                <img src="../../resources/Images/Library/icon-upload-music.png" alt="icône pour charger un fichier/dossier" id="loadup-icon">
+                <form id="uploadForm">
+                    <input type="file" id="myFiles" accept="audio/*" multiple />
+                    <button>Ajouter</button>
+                </form>
+                <div id="audioDiv"></div>
+            </div><!--FIN BARRE DESCRIPTION-->
+
+            <script>
+                const form = document.getElementById('uploadForm')
+            
+                const sendFiles = async () => {
+                    const myFiles = document.getElementById('myFiles').files
+                    const formData = new FormData()
+            
+                    Object.keys(myFiles).forEach(key => {
+                        formData.append(myFiles.item(key).name, myFiles.item(key))
+                    })
+            
+                    const response = await fetch('http://localhost:3500/upload', {
+                        method: 'POST',
+                        body: formData
+                    })
+            
+                    const json = await response.json()
+            
+                    const h2 = document.querySelector('h2')
+                    h2.textContent = `Status: ${json?.status}`
+            
+                    const h3 = document.querySelector('h3')
+                    h3.textContent = json?.message
+            
+                    const audioDiv = document.querySelector('#audioDiv')
+                    audioDiv.innerHTML = '';
+                    json.message.forEach((filename) => {
+                        const audio = document.createElement('audio');
+                        audio.src = `http://localhost:3500/files/${filename}`;
+                        audio.controls = true;
+                        audioDiv.appendChild(audio);
+            
+                        const playButton = document.createElement('button');
+                        playButton.textContent = 'Play';
+                        playButton.addEventListener('click', () => {
+                            audio.play();
+                        });
+                        audioDiv.appendChild(playButton);
+            
+                        const pauseButton = document.createElement('button');
+                        pauseButton.textContent = 'Pause';
+                        pauseButton.addEventListener('click', () => {
+                            audio.pause();
+                        });
+                        audioDiv.appendChild(pauseButton);
+                    });
+            
+                    console.log(json)
+                }
+            
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault()
+                    sendFiles()
+                })
+            </script>
+
+            <!--MUSIC TAB-->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Titre <span class="icon-arrow">&UpArrow;</span> </th>
+                        <th>Artiste <span class="icon-arrow">&UpArrow;</span></th>
+                        <th>Album <span class="icon-arrow">&UpArrow;</span></th>
+                        <th>Durée <span class="icon-arrow">&UpArrow;</span></th>
+                        <th><button class="like-btn-head">❤</button></th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/H.E.R._(2017)_album_cover.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Focus</td>
+                        <td>H.E.R</td>
+                        <td>H.E.R </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/album-cover.jpeg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>All mine</td>
+                        <td>Brent Faiyaz</td>
+                        <td>WASTELAND</td>
+                        <td>3:33</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/snoh-aalegra.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Situationship</td>
+                        <td>Snoh Aalegra</td>
+                        <td>-Ugh, those feels again </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/Giveon_-_Take_Time.png" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Heartbreak anniversary</td>
+                        <td>Giveon</td>
+                        <td>TAKE TIME </td>
+                        <td>7:77</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/album-cover.jpeg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Rolling stone</td>
+                        <td>Brent Faiyaz</td>
+                        <td>WASTELAND </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/album-cover.jpeg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Dead man walking</td>
+                        <td>Brent Faiyaz</td>
+                        <td>WASTELAND </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/SZA-cover.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Shirt</td>
+                        <td>SZA</td>
+                        <td>SOS </td>
+                        <td>2:34</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/album-cover.jpeg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Angel</td>
+                        <td>Brent Faiyaz</td>
+                        <td>WASTELAND </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/SZA-cover.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Love language</td>
+                        <td>SZA</td>
+                        <td>SOS </td>
+                        <td>2:34</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr> 
+                    <tr>
+                        <td><img src="../../resources/Images/Library/Giveon_-_Take_Time.png" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Vanish</td>
+                        <td>Giveon</td>
+                        <td>TAKE TIME </td>
+                        <td>7:77</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/Sabrina_Claudio_-_About_Time.png" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Natural</td>
+                        <td>Sabrina Claudio</td>
+                        <td>About time </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>                   
+                    <tr>
+                        <td><img src="../../resources/Images/Library/H.E.R._(2017)_album_cover.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Losing</td>
+                        <td>H.E.R</td>
+                        <td>H.E.R </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/summer-walker-album.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Session 32</td>
+                        <td>Summer Walker</td>
+                        <td>Session 32 </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/snoh-aalegra.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>I want you around</td>
+                        <td>Snoh Aalegra</td>
+                        <td>-Ugh, those feels again </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/Sabrina_Claudio_-_About_Time.png" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Frozen</td>
+                        <td>Sabrina Claudio</td>
+                        <td>About time </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/H.E.R._(2017)_album_cover.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Focus</td>
+                        <td>H.E.R</td>
+                        <td>H.E.R </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/album-cover.jpeg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>All mine</td>
+                        <td>Brent Faiyaz</td>
+                        <td>WASTELAND</td>
+                        <td>3:33</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/snoh-aalegra.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Situationship</td>
+                        <td>Snoh Aalegra</td>
+                        <td>-Ugh, those feels again </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/Giveon_-_Take_Time.png" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Heartbreak anniversary</td>
+                        <td>Giveon</td>
+                        <td>TAKE TIME </td>
+                        <td>7:77</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/album-cover.jpeg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Rolling stone</td>
+                        <td>Brent Faiyaz</td>
+                        <td>WASTELAND </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/album-cover.jpeg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Dead man walking</td>
+                        <td>Brent Faiyaz</td>
+                        <td>WASTELAND </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/SZA-cover.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Shirt</td>
+                        <td>SZA</td>
+                        <td>SOS </td>
+                        <td>2:34</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/album-cover.jpeg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Angel</td>
+                        <td>Brent Faiyaz</td>
+                        <td>WASTELAND </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/SZA-cover.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Love language</td>
+                        <td>SZA</td>
+                        <td>SOS </td>
+                        <td>2:34</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr> 
+                    <tr>
+                        <td><img src="../../resources/Images/Library/Giveon_-_Take_Time.png" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Vanish</td>
+                        <td>Giveon</td>
+                        <td>TAKE TIME </td>
+                        <td>7:77</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/Sabrina_Claudio_-_About_Time.png" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Natural</td>
+                        <td>Sabrina Claudio</td>
+                        <td>About time </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>                   
+                    <tr>
+                        <td><img src="../../resources/Images/Library/H.E.R._(2017)_album_cover.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Losing</td>
+                        <td>H.E.R</td>
+                        <td>H.E.R </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/summer-walker-album.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Session 32</td>
+                        <td>Summer Walker</td>
+                        <td>Session 32 </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/snoh-aalegra.jpg" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>I want you around</td>
+                        <td>Snoh Aalegra</td>
+                        <td>-Ugh, those feels again </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../resources/Images/Library/Sabrina_Claudio_-_About_Time.png" alt="Couverture de l'album WASTELAND de l'artiste Brent Faiyaz" class="mini-album-cover"></td>
+                        <td>Frozen</td>
+                        <td>Sabrina Claudio</td>
+                        <td>About time </td>
+                        <td>4:44</td>
+                        <td><button class="like-btn">❤</button></td>
+                    </tr>
+                </tbody>
+            </table>            <!-- FIN MUSIC TAB -->
+
+            <!--REDUCED PLAYER-->
+            <div id="reduced-player">
+
+                <!--DESCRI SONG-->
+                <div id="thumbnail-song">
+                    <img src="../../resources/Images/Library/album-cover.jpeg" alt="cover d'album ou de titre" id="cover-album">
+                    <div id="song-info">
+                        <h4>DEAD MAN WALKING</h4>
+                        <h5>Brent Faiyaz</h5>
+                        <h6>WASTELAND</h6>
+                    </div>
+                </div><!--FIN DESCRI SONG-->
+                
+                <!--BARRE MUSIQUE-->
+                <div id="progress-bar-library">
+                    <div id="progress-bar">
+                        <input type="range" min="0" max="100" value="40" class="slider" id="progress-slider">
+                    </div>  
+                    <!--BOUTONS CONTROLES-->
+                    <div class="buttons-library">
+                        <button class="button-library" id="previous-button" data-action="previous">
+                            <img src="../../resources/Images/MusicPlayer/Icons/rewind.png" alt="Previous">
+                        </button>
+                                                        
+                        <button class="button-library" id="pause-button" data-action="pause">
+                            <img src="../../resources/Images/MusicPlayer/Icons/pause.png" alt="Pause">
+                        </button>   
+
+                        <button class="button-library" id="next-button" data-action="next">
+                            <img src="../../resources/Images/MusicPlayer/Icons/fast-forward.png" alt="Next">
+                        </button>     
+                    </div> <!--FIN BOUTONS CONTROLES-->        
+                </div><!--FIN BARRE MUSIQUE-->
+            </div><!--FIN REDUCED PLAYER-->
+
+        </div><!--FIN MAIN CONTENT-->
+    </div><!--FIN COMPONENT BIBLIOTHEQUE-->
+</body>
+</html>
