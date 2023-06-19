@@ -56,38 +56,44 @@
 
             <!--BARRE DESCRIPTION TITRE ARTISTE DUREE--> <!--INCLURE DANS TAB??-->
             <div id="upload-file">
-                <img src="../../resources/Images/Library/icon-upload-music.png" alt="icône pour charger un fichier/dossier" id="loadup-icon">
                 <form id="uploadForm">
-                    <input type="file" id="myFiles" accept="audio/*" multiple />
-                    <button>Ajouter</button>
+                    <input type="file" id="myFiles" accept="audio/*" multiple style="display: none;"/>
+                    <label for="myFiles" class="glass-button">Choisir des fichiers</label>
+                    <span id="fileNames"></span>
+                    <button class="glass-button">Ajouter</button>
                 </form>
                 <div id="audioDiv"></div>
-            </div><!--FIN BARRE DESCRIPTION-->
+            </div><!--FIN BARRE DESCRIPTION-->            
 
             <script>
                 const form = document.getElementById('uploadForm')
-            
+                const myFiles = document.getElementById('myFiles')
+                const fileNames = document.getElementById('fileNames')
+
+                myFiles.addEventListener('change', () => {
+                    fileNames.textContent = Array.from(myFiles.files).map(file => file.name).join(', ')
+                })
+
                 const sendFiles = async () => {
-                    const myFiles = document.getElementById('myFiles').files
                     const formData = new FormData()
-            
-                    Object.keys(myFiles).forEach(key => {
-                        formData.append(myFiles.item(key).name, myFiles.item(key))
+
+                    Object.keys(myFiles.files).forEach(key => {
+                        formData.append(myFiles.files.item(key).name, myFiles.files.item(key))
                     })
-            
+
                     const response = await fetch('http://localhost:3500/upload', {
                         method: 'POST',
                         body: formData
                     })
-            
+
                     const json = await response.json()
-            
+
                     const h2 = document.querySelector('h2')
                     h2.textContent = `Status: ${json?.status}`
-            
+
                     const h3 = document.querySelector('h3')
                     h3.textContent = json?.message
-            
+
                     const audioDiv = document.querySelector('#audioDiv')
                     audioDiv.innerHTML = '';
                     json.message.forEach((filename) => {
@@ -95,14 +101,14 @@
                         audio.src = `http://localhost:3500/files/${filename}`;
                         audio.controls = true;
                         audioDiv.appendChild(audio);
-            
+
                         const playButton = document.createElement('button');
                         playButton.textContent = 'Play';
                         playButton.addEventListener('click', () => {
                             audio.play();
                         });
                         audioDiv.appendChild(playButton);
-            
+
                         const pauseButton = document.createElement('button');
                         pauseButton.textContent = 'Pause';
                         pauseButton.addEventListener('click', () => {
@@ -110,14 +116,15 @@
                         });
                         audioDiv.appendChild(pauseButton);
                     });
-            
+
                     console.log(json)
                 }
-            
+
                 form.addEventListener('submit', (e) => {
                     e.preventDefault()
                     sendFiles()
                 })
+
             </script>
 
             <!--MUSIC TAB-->
